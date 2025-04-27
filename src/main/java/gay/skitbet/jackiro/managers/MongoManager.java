@@ -1,4 +1,4 @@
-package gay.skitbet.jackiro.database;
+package gay.skitbet.jackiro.managers;
 
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;

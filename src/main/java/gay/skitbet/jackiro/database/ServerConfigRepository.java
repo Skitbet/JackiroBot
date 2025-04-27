@@ -1,9 +1,9 @@
-package gay.skitbet.jackiro.database.repositories;
+package gay.skitbet.jackiro.database;
 
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.ReplaceOptions;
-import gay.skitbet.jackiro.database.MongoManager;
+import gay.skitbet.jackiro.managers.MongoManager;
 import gay.skitbet.jackiro.model.ServerConfig;
 import gay.skitbet.jackiro.model.ServerUserData;
 import lombok.Getter;
@@ -51,12 +51,23 @@ public class ServerConfigRepository {
     /**
      * Loads the server configuration from the cache or MongoDB.
      * @param guildId The guildId of the server configuration to load.
-     * @return The ServerConfig if found, or null if not found.
+     * @return The ServerConfig if found, or new default if none exists
      */
     public ServerConfig load(String guildId) {
         // First check cache
-        return Optional.ofNullable(cache.get(guildId))
-                .orElseGet(() -> loadFromDatabase(guildId));
+        ServerConfig config = cache.get(guildId);
+
+        // probably a better way of doing this lmao
+        if (config == null) {
+            config = loadFromDatabase(guildId);
+        }
+
+        if (config == null) {
+            config = new ServerConfig(guildId);
+        }
+
+
+        return config;
     }
 
     /**
@@ -65,8 +76,6 @@ public class ServerConfigRepository {
      * @return The loaded ServerConfig.
      */
     private ServerConfig loadFromDatabase(String guildId) {
-        System.out.println("loading " + guildId);
-
         Document doc = collection.find(Filters.eq("_id", guildId)).first();
         if (doc == null) {
             return null;

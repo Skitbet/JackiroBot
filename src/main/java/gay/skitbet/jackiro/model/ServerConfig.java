@@ -12,7 +12,6 @@ import java.util.HashMap;
 @ToString
 public class ServerConfig {
     public String guildId;
-
     public ArrayList<String> disabledCommands = new ArrayList<>();
 
     public HashMap<String, ServerUserData> userData = new HashMap<>();

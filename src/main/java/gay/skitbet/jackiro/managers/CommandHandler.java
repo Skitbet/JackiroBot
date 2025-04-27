@@ -1,8 +1,8 @@
-package gay.skitbet.jackiro.command;
+package gay.skitbet.jackiro.managers;
 
-import gay.skitbet.jackiro.command.impl.PingCommand;
+import gay.skitbet.jackiro.command.Command;
+import gay.skitbet.jackiro.command.CommandContext;
 import gay.skitbet.jackiro.utils.JackiroEmbed;
-import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -11,7 +11,6 @@ import net.dv8tion.jda.api.sharding.ShardManager;
 import org.jetbrains.annotations.NotNull;
 import org.reflections.Reflections;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -33,7 +32,7 @@ public class CommandHandler extends ListenerAdapter {
      * Adds all commands to the HashMap<String, Command>
      */
     public void addCommands() {
-        Package commandPackage = this.getClass().getPackage();
+        Package commandPackage = Command.class.getPackage();
         String packageName = commandPackage.getName();
         Reflections reflections = new Reflections(packageName + ".impl");
 

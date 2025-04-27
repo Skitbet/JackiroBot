@@ -1,8 +1,8 @@
 package gay.skitbet.jackiro;
 
-import gay.skitbet.jackiro.command.CommandHandler;
-import gay.skitbet.jackiro.database.MongoManager;
-import gay.skitbet.jackiro.database.repositories.ServerConfigRepository;
+import gay.skitbet.jackiro.managers.CommandHandler;
+import gay.skitbet.jackiro.managers.MongoManager;
+import gay.skitbet.jackiro.database.ServerConfigRepository;
 import gay.skitbet.jackiro.listener.MainListener;
 import gay.skitbet.jackiro.music.JackiroMusicManager;
 import gay.skitbet.jackiro.task.LoadGuildsTask;
