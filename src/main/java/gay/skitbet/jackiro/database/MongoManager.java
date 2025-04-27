@@ -1,0 +1,19 @@
+package gay.skitbet.jackiro.database;
+
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoClients;
+import com.mongodb.client.MongoDatabase;
+import lombok.Getter;
+
+public class MongoManager {
+
+    private static MongoClient mongoClient;
+    @Getter
+    private static MongoDatabase database;
+
+    public static void connect(String dbName) {
+        mongoClient = MongoClients.create();
+        database = mongoClient.getDatabase(dbName);
+    }
+
+}
