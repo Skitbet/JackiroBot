@@ -1,12 +1,12 @@
 package gay.skitbet.jackiro;
 
+import gay.skitbet.jackiro.command.CommandHandler;
 import gay.skitbet.jackiro.database.MongoManager;
 import gay.skitbet.jackiro.database.repositories.ServerConfigRepository;
 import gay.skitbet.jackiro.listener.MainListener;
 import gay.skitbet.jackiro.task.LoadGuildsTask;
 import gay.skitbet.jackiro.task.UpdateStatusTask;
 import gay.skitbet.jackiro.utils.JackiroConfig;
-import gay.skitbet.jackiro.utils.JackiroShards;
 import lombok.Getter;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder;
@@ -30,19 +30,20 @@ public class Jackiro {
 
     // important bot stuff
     private final ScheduledExecutorService executor;
-    private final JackiroShards jackiroShards;
+    private CommandHandler commandHandler;
 
     // db repositories
     private ServerConfigRepository serverConfigRepository;
 
     // jda shard manager
+    public int readyShards;
     private ShardManager shardManager;
+
 
     public Jackiro(JackiroConfig config) {
         instance = this;
         Jackiro.config = config; // load config early
         this.executor = Executors.newScheduledThreadPool(8); // create async executor
-        this.jackiroShards = new JackiroShards(); // setup shard utils
     }
 
     /**
@@ -74,6 +75,7 @@ public class Jackiro {
         try {
             initializeMongoDB(); // connect to mongo
             initializeShardManager(); // start shards
+            this.commandHandler = new CommandHandler(shardManager);
             LOGGER.info("Jackiro bot has started successfully!");
         } catch (Exception e) {
             LOGGER.error("Failed to start Jackiro: ", e);
@@ -102,7 +104,7 @@ public class Jackiro {
                 .addEventListeners(new MainListener()); //  register main listener
 
         shardManager = builder.build();
-        jackiroShards.getShards().addAll(shardManager.getShards());
+
     }
 
     /**
@@ -112,6 +114,7 @@ public class Jackiro {
     public void onReady() {
         new UpdateStatusTask().start(); // auto update status
         new LoadGuildsTask(this).start(); // cache guild settings
+        this.commandHandler.registerCommands();
     }
 
     /**

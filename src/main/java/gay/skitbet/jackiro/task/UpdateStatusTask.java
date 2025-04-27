@@ -1,11 +1,10 @@
 package gay.skitbet.jackiro.task;
 
 import gay.skitbet.jackiro.Jackiro;
-import gay.skitbet.jackiro.JackiroLauncher;
-import gay.skitbet.jackiro.utils.JackiroShards;
 import lombok.SneakyThrows;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
+import net.dv8tion.jda.api.sharding.ShardManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,15 +41,15 @@ public class UpdateStatusTask extends Thread {
 
         String status = Jackiro.config.getCurrentlyPlaying().get(currentIndex);
 
-        JackiroShards jackiroShards = Jackiro.getInstance().getJackiroShards();
-        status = status.replace("{guilds}", String.valueOf(jackiroShards.getGuilds().size()));
-        status = status.replace("{users}", String.valueOf(jackiroShards.getUsers().size()));
+        ShardManager shardManager = Jackiro.getInstance().getShardManager();
+        status = status.replace("{guilds}", String.valueOf(shardManager.getGuilds().size()));
+        status = status.replace("{users}", String.valueOf(shardManager.getUsers().size()));
         status = status.replace("{uptime}", uptimeStr);
 
         long diff = System.currentTimeMillis() - lastUpdate;
 
         if (diff >= UPDATE_INTERVAL) {
-            jackiroShards.setPresence(OnlineStatus.ONLINE, Activity.playing(status));
+            shardManager.setPresence(OnlineStatus.ONLINE, Activity.playing(status));
             currentIndex = (currentIndex + 1) % Jackiro.config.getCurrentlyPlaying().size();
             lastUpdate = System.currentTimeMillis();
         }
