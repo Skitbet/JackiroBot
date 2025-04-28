@@ -17,6 +17,7 @@ import net.dv8tion.jda.api.sharding.ShardManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.Instant;
 import java.util.Random;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -33,6 +34,7 @@ public class Jackiro {
 
     // important bot stuff
     private final ScheduledExecutorService executor;
+    private final Instant startTime = Instant.now();
     private JackiroMusicManager jackiroMusicManager;
     private CommandHandler commandHandler;
 
