@@ -1,9 +1,6 @@
 # Use OpenJDK 17 base image
 FROM eclipse-temurin:17-jdk
 
-# Create app directory
-WORKDIR /app
-
 # Copy pom.xml and download dependencies
 COPY pom.xml .
 RUN apt-get update && apt-get install -y maven
