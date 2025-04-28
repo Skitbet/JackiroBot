@@ -64,7 +64,7 @@ public class SetupSession {
 
     private void handleNicknameStep(String content) {
         if (!content.equalsIgnoreCase("none")) {
-            member.modifyNickname(content).queue();
+            channel.getGuild().getSelfMember().modifyNickname(content).queue();
         }
     }
 
