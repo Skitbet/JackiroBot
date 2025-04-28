@@ -3,6 +3,7 @@ package gay.skitbet.jackiro.utils;
 import gay.skitbet.jackiro.Jackiro;
 import gay.skitbet.jackiro.command.CommandContext;
 import gay.skitbet.jackiro.database.ServerConfigRepository;
+import gay.skitbet.jackiro.managers.MongoManager;
 import gay.skitbet.jackiro.managers.SetupManager;
 import gay.skitbet.jackiro.model.ServerConfig;
 import lombok.Getter;
@@ -29,10 +30,10 @@ public class SetupSession {
     public SetupSession(CommandContext context) {
         this.member = context.getMember();
         this.channel = context.getChannel().asTextChannel();
-        this.config = Jackiro.getInstance().getServerConfigRepository().load(channel.getGuild().getId());
+        this.config = MongoManager.getServerConfigRepository().load(channel.getGuild().getId());
 
-        context.getEvent().reply("🤔 Loading the setup...").queue(hook -> {
-            this.questionMessage = hook.retrieveOriginal().complete();
+        channel.sendMessage("🤔 Loading the setup...").queue(msg -> {
+            this.questionMessage = msg;
             start();
         });
     }
@@ -93,7 +94,7 @@ public class SetupSession {
     }
 
     private void finish() {
-        Jackiro.getInstance().getServerConfigRepository().save(config);
+        MongoManager.getServerConfigRepository().save(config);
         SetupManager.endSetup(this);
         channel.sendMessage("✅ Setup completed successfully!").queue();
     }

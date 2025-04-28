@@ -12,7 +12,7 @@ import java.util.List;
 
 public class SetupCommand extends Command {
     public SetupCommand() {
-        super("setup", "Run the quick setup on Jackiro for this Guild!", Permission.ADMINISTRATOR, null);
+        super("setup", "Run the quick setup on Jackiro for this Guild!", Permission.ADMINISTRATOR, null, true);
     }
 
     @Override

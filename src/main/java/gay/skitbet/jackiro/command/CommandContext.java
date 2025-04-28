@@ -2,10 +2,7 @@ package gay.skitbet.jackiro.command;
 
 import lombok.Getter;
 import lombok.Setter;
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
@@ -27,20 +24,23 @@ public class CommandContext {
     private final Guild guild;
     private final MessageChannelUnion channel;
 
-    public CommandContext(SlashCommandInteractionEvent event) {
+
+    public CommandContext(SlashCommandInteractionEvent event, Command command) {
         this.event = event;
         this.user = event.getUser();
         this.guild = event.getGuild();
         this.member = event.getMember();
         this.channel = event.getChannel();
+
+        this.event.deferReply(command.isEphemeral()).queue();
     }
 
     public void reply(String message) {
-        event.reply(message).queue();
+        event.getHook().editOriginal(message).queue();
     }
 
-    public void reply(MessageEmbed embed, MessageEmbed... embeds) {
-        event.replyEmbeds(embed, embeds).queue();
+    public void reply(MessageEmbed embed) {
+        event.getHook().editOriginalEmbeds(embed).queue();
     }
 
     public OptionMapping getOption(String key) {

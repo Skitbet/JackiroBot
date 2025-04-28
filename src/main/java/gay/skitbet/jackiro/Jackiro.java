@@ -38,9 +38,6 @@ public class Jackiro {
     private JackiroMusicManager jackiroMusicManager;
     private CommandHandler commandHandler;
 
-    // db repositories
-    private ServerConfigRepository serverConfigRepository;
-
     // jda shard manager
     public int readyShards;
     private ShardManager shardManager;
@@ -95,7 +92,6 @@ public class Jackiro {
     private void initializeMongoDB() {
         LOGGER.info("Connecting to MongoDB...");
         MongoManager.connect("jackiro"); // connect to db
-        this.serverConfigRepository = new ServerConfigRepository(); // setup repo
         LOGGER.info("MongoDB connected.");
     }
 

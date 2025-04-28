@@ -63,7 +63,7 @@ public class CommandHandler extends ListenerAdapter {
     }
 
     public void registerGuildCommands(Guild guild) {
-        ServerConfig config = Jackiro.getInstance().getServerConfigRepository().load(guild.getId());
+        ServerConfig config = MongoManager.getServerConfigRepository().load(guild.getId());
 
         CommandListUpdateAction commandListUpdateAction = guild.updateCommands();
         commandListUpdateAction.addCommands(
@@ -88,7 +88,7 @@ public class CommandHandler extends ListenerAdapter {
         Command command = getCommand(commandName);
 
         if (command != null) {
-            CommandContext context = new CommandContext(event);
+            CommandContext context = new CommandContext(event, command);
 
             // make sure the user has permission!
             if (command.getPermission() != null && !event.getMember().hasPermission(command.getPermission())) {

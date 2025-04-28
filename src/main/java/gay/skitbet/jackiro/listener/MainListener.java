@@ -1,6 +1,7 @@
 package gay.skitbet.jackiro.listener;
 
 import gay.skitbet.jackiro.Jackiro;
+import gay.skitbet.jackiro.managers.MongoManager;
 import gay.skitbet.jackiro.managers.SetupManager;
 import gay.skitbet.jackiro.model.ServerConfig;
 import gay.skitbet.jackiro.utils.JackiroEmbed;
@@ -44,7 +45,7 @@ public class MainListener extends ListenerAdapter {
     public void onGuildJoin(@NotNull GuildJoinEvent event) {
         ServerConfig serverConfig = new ServerConfig(event.getGuild().getId());
 
-        Jackiro.getInstance().getServerConfigRepository().save(serverConfig);
+        MongoManager.getServerConfigRepository().save(serverConfig);
         event.getGuild().getDefaultChannel().asTextChannel().sendMessageEmbeds(JackiroEmbed.getNewGuildEmbed(event.getGuild())).queue();
         Jackiro.getInstance().getCommandHandler().registerGuildCommands(event.getGuild());
 
@@ -53,7 +54,7 @@ public class MainListener extends ListenerAdapter {
 
     @Override
     public void onGuildLeave(@NotNull GuildLeaveEvent event) {
-        Jackiro.getInstance().getServerConfigRepository()
+        MongoManager.getServerConfigRepository()
                 .delete(event.getGuild().getId());
     }
 

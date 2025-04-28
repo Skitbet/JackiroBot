@@ -15,20 +15,23 @@ public abstract class Command {
     private final String name;
     private final String description;
     private final JackiroModule module;
+    private final boolean ephemeral;
 
     private Permission permission;
 
-    public Command(String name, String description, JackiroModule module) {
+    public Command(String name, String description, JackiroModule module, boolean ephemeral) {
         this.name = name.toLowerCase();
         this.description = description;
         this.module = module;
+        this.ephemeral = ephemeral;
     }
 
-    public Command(String name, String description, Permission permission, JackiroModule module) {
+    public Command(String name, String description, Permission permission, JackiroModule module, boolean ephemeral) {
         this.name = name.toLowerCase();
         this.description = description;
         this.permission = permission;
         this.module = module;
+        this.ephemeral = ephemeral;
     }
 
     public abstract void execute(CommandContext context);

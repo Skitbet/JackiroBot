@@ -14,7 +14,7 @@ import java.util.List;
 public class InfoCommand extends Command {
 
     public InfoCommand() {
-        super("info", "Shows the current bot status and information!", JackiroModule.UTILITIES);
+        super("info", "Shows the current bot status and information!", JackiroModule.UTILITIES, false);
     }
 
     @Override
