@@ -33,6 +33,7 @@ public class ServerConfigRepository {
         cache.put(config.guildId, config);
         Document doc = new Document()
                 .append("_id", config.guildId)
+                .append("botUpdateChannelID", config.botUpdateChannelId)
                 .append("disabledCommands", config.disabledCommands)
                 .append("userData", serializeUserData(config.userData));
 
@@ -82,20 +83,13 @@ public class ServerConfigRepository {
         }
 
         ServerConfig config = new ServerConfig(doc.getString("_id"));
-        loadDisabledCommands(config, doc);
+        config.botUpdateChannelId = doc.getString("botUpdateChannelID");
+        config.disabledCommands.addAll(doc.getList("disabledCommands", String.class));
+
         loadUserData(config, doc);
 
         cache.put(guildId, config); // Cache the loaded config
         return config;
-    }
-
-    /**
-     * Loads the disabled commands from a MongoDB document.
-     * @param config The ServerConfig to populate.
-     * @param doc The MongoDB document.
-     */
-    private void loadDisabledCommands(ServerConfig config, Document doc) {
-        config.disabledCommands.addAll(doc.getList("disabledCommands", String.class));
     }
 
     /**

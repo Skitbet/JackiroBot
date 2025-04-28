@@ -12,6 +12,7 @@ import java.util.HashMap;
 @ToString
 public class ServerConfig {
     public String guildId;
+    public String botUpdateChannelId;
     public ArrayList<String> disabledCommands = new ArrayList<>();
     public ArrayList<String> disabledModules = new ArrayList<>();
 
