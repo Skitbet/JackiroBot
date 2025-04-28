@@ -5,6 +5,7 @@ import gay.skitbet.jackiro.command.Command;
 import gay.skitbet.jackiro.command.CommandContext;
 import gay.skitbet.jackiro.utils.JackiroEmbed;
 import gay.skitbet.jackiro.utils.JackiroModule;
+import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 
@@ -19,6 +20,16 @@ public class PlayCommand extends Command {
     @Override
     public void execute(CommandContext context) {
         String url = context.getOption("url").getAsString();
+
+        if (!context.getMember().getVoiceState().inAudioChannel() || !(context.getMember().getVoiceState().getChannel() instanceof VoiceChannel)) {
+            context.reply(new JackiroEmbed()
+                    .setColor(Color.RED)
+                    .setTitle("❌ No Channel!")
+                    .setDescription("Sorry, but I cant a channel if your not in one!")
+                    .build());
+            return;
+        }
+
         if (url.contains("youtube.com") && !context.getUser().getId().equals(Jackiro.config.getOwnerId())) {
             context.reply(new JackiroEmbed()
                     .setColor(Color.RED)
@@ -27,8 +38,7 @@ public class PlayCommand extends Command {
                     .build());
             return;
         }
-        context.reply("Loading...");
-        Jackiro.getInstance().getJackiroMusicManager().loadAndPlay(context.getChannel().asTextChannel(), url);
+        Jackiro.getInstance().getJackiroMusicManager().loadAndPlay(context, url);
     }
 
     @Override

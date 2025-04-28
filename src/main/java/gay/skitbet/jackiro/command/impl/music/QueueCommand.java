@@ -21,7 +21,7 @@ public class QueueCommand extends Command {
 
     @Override
     public void execute(CommandContext context) {
-        GuildMusicManager manager = Jackiro.getInstance().getJackiroMusicManager().getGuildAndPlayer(context.getGuild());
+        GuildMusicManager manager = Jackiro.getInstance().getJackiroMusicManager().getGuildAndPlayer(context.getGuild(), context.getChannel().asTextChannel());
         if (manager == null) {
             context.reply(new JackiroEmbed()
                     .setColor(Color.RED)

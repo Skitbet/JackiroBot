@@ -6,6 +6,7 @@ import gay.skitbet.jackiro.command.CommandContext;
 import gay.skitbet.jackiro.model.ServerConfig;
 import gay.skitbet.jackiro.utils.JackiroEmbed;
 import gay.skitbet.jackiro.utils.JackiroModule;
+import lombok.Getter;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -21,6 +22,7 @@ import java.util.stream.Collectors;
 
 public class CommandHandler extends ListenerAdapter {
 
+    @Getter
     private final Map<String, Command> commands;
     private final ShardManager shardManager;
 
@@ -86,8 +88,16 @@ public class CommandHandler extends ListenerAdapter {
     public void onSlashCommandInteraction(@NotNull SlashCommandInteractionEvent event) {
         String commandName = event.getName().toLowerCase();
         Command command = getCommand(commandName);
+        if (event.getGuild() == null) return;
 
         if (command != null) {
+            // handle if command is disabled
+            ServerConfig config = MongoManager.getServerConfigRepository().load(event.getGuild().getId());
+            if (config.disabledCommands.contains(command.getName())) {
+                event.replyEmbeds(new JackiroEmbed().error("This command is disabled in this server!")).setEphemeral(true).queue();
+                return;
+            }
+
             CommandContext context = new CommandContext(event, command);
 
             // make sure the user has permission!
@@ -107,4 +117,5 @@ public class CommandHandler extends ListenerAdapter {
             event.replyEmbeds(new JackiroEmbed().error("Unknown command!")).queue();
         }
     }
+
 }

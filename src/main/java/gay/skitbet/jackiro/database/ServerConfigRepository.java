@@ -9,6 +9,8 @@ import gay.skitbet.jackiro.model.ServerUserData;
 import lombok.Getter;
 import org.bson.Document;
 
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.Optional;
@@ -84,7 +86,7 @@ public class ServerConfigRepository {
 
         ServerConfig config = new ServerConfig(doc.getString("_id"));
         config.botUpdateChannelId = doc.getString("botUpdateChannelID");
-        config.disabledCommands.addAll(doc.getList("disabledCommands", String.class));
+        config.disabledCommands = doc.getList("disabledCommands", String.class);
 
         loadUserData(config, doc);
 

@@ -7,7 +7,9 @@ import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
+import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
 import gay.skitbet.jackiro.Jackiro;
+import gay.skitbet.jackiro.command.CommandContext;
 import gay.skitbet.jackiro.utils.JackiroEmbed;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
@@ -31,11 +33,11 @@ public class JackiroMusicManager extends ListenerAdapter {
         Jackiro.getInstance().getShardManager().addEventListener(this);
     }
 
-    public synchronized GuildMusicManager getGuildAndPlayer(Guild guild) {
+    public synchronized GuildMusicManager getGuildAndPlayer(Guild guild, TextChannel musicChannel) {
         GuildMusicManager musicManager = musicManagers.get(guild.getId());
 
         if (musicManager == null) {
-            musicManager = new GuildMusicManager(playerManager);
+            musicManager = new GuildMusicManager(playerManager, musicChannel);
             musicManagers.put(guild.getId(), musicManager);
         }
 
@@ -43,8 +45,8 @@ public class JackiroMusicManager extends ListenerAdapter {
         return musicManager;
     }
 
-    public void loadAndPlay(final TextChannel channel, final String trackUrl) {
-        GuildMusicManager musicManager = getGuildAndPlayer(channel.getGuild());
+    public void loadAndPlay(CommandContext context, final String trackUrl) {
+        GuildMusicManager musicManager = getGuildAndPlayer(context.getGuild(), context.getChannel().asTextChannel());
 
         playerManager.loadItemOrdered(musicManager, trackUrl, new AudioLoadResultHandler() {
             @Override
@@ -55,16 +57,16 @@ public class JackiroMusicManager extends ListenerAdapter {
                         musicManager.scheduler.peekNextTrack().getInfo().title : "No track in queue.";
 
                 // Send the track info embed
-                channel.sendMessageEmbeds(new JackiroEmbed()
+                context.reply(new JackiroEmbed()
                         .setColor(Color.GREEN)
                         .setTitle("Track Added")
                         .setDescription("**" + audioTrack.getInfo().title + "** has been added to the queue!")
                         .addField("Duration", duration, true)
                         .addField("Next Track", nextTrack, true)
                         .setThumbnailUrl(audioTrack.getInfo().uri)
-                        .build()).queue();
+                        .build());
 
-                play(channel.getGuild(), musicManager, audioTrack);
+                play(context, context.getGuild(), musicManager, audioTrack);
             }
 
             @Override
@@ -80,72 +82,67 @@ public class JackiroMusicManager extends ListenerAdapter {
                         musicManager.scheduler.peekNextTrack().getInfo().title : "No track in queue.";
 
                 // Send playlist info
-                channel.sendMessageEmbeds(new JackiroEmbed()
+                context.reply(new JackiroEmbed()
                         .setColor(Color.GREEN)
                         .setTitle("Playlist Loaded")
                         .setDescription("Added **" + firstTrack.getInfo().title + "** from playlist **" + audioPlaylist.getName() + "** to the queue.")
                         .addField("Duration", duration, true)
                         .addField("Next Track", nextTrack, true)
                         .setThumbnailUrl(firstTrack.getInfo().uri)
-                        .build()).queue();
+                        .build());
 
-                play(channel.getGuild(), musicManager, firstTrack);
+                play(context, context.getGuild(), musicManager, firstTrack);
             }
 
             @Override
             public void noMatches() {
-                channel.sendMessageEmbeds(new JackiroEmbed()
+                context.reply(new JackiroEmbed()
                         .setColor(Color.RED)
                         .setTitle("No Results Found")
                         .setDescription("Couldn't find anything for **" + trackUrl + "**. Please check the URL and try again.")
-                        .build()).queue();
+                        .build());
             }
 
             @Override
             public void loadFailed(FriendlyException e) {
                 String errorMessage = "Could not load track: " + e.getMessage();
-                channel.sendMessageEmbeds(new JackiroEmbed()
+                context.reply(new JackiroEmbed()
                         .setColor(Color.RED)
                         .setTitle("Load Failed")
                         .setDescription(errorMessage)
-                        .build()).queue();
+                        .build());
                 e.printStackTrace();
             }
         });
     }
 
-    private void play(Guild guild, GuildMusicManager musicManager, AudioTrack track) {
+    private void play(CommandContext context, Guild guild, GuildMusicManager musicManager, AudioTrack track) {
         if (musicManager.player.getPlayingTrack() != null) {
             int position = musicManager.scheduler.getTrackPositionInQueue(track);
             String nextTrack = musicManager.scheduler.peekNextTrack() != null ?
                     musicManager.scheduler.peekNextTrack().getInfo().title : "No track in queue.";
 
-            guild.getDefaultChannel().asTextChannel().sendMessageEmbeds(new JackiroEmbed()
+            TextChannel musicChannel = musicManager.musicChannel;
+            if (musicChannel == null) {
+                musicChannel = guild.getDefaultChannel().asTextChannel();
+            }
+            AudioTrackInfo currentTrack = musicManager.player.getPlayingTrack().getInfo();
+            musicChannel.sendMessageEmbeds(new JackiroEmbed()
                     .setColor(Color.YELLOW)
                     .setTitle("Track Added to Queue")
-                    .setDescription("The track **" + track.getInfo().title + "** is already playing! It's now in the queue.")
+                    .setDescription("The track **" + currentTrack.title + "** is already playing! It's now in the queue.")
                     .addField("Position in Queue", String.valueOf(position), true)
                     .addField("Next Track", nextTrack, true)
                     .build()).queue();
         }
 
-        connectToFirstVoiceChannel(guild.getAudioManager());
+        connectToVoiceChannel(context.getMember().getVoiceState().getChannel().asVoiceChannel(), guild.getAudioManager());
         musicManager.scheduler.queue(track);
     }
 
-    private static void connectToFirstVoiceChannel(AudioManager audioManager) {
+    private void connectToVoiceChannel(VoiceChannel voiceChannel, AudioManager audioManager) {
         if (!audioManager.isConnected()) {
-            for (VoiceChannel voiceChannel : audioManager.getGuild().getVoiceChannels()) {
-                audioManager.openAudioConnection(voiceChannel);
-                return;
-            }
-
-            // If no voice channel is found, notify the user
-            audioManager.getGuild().getDefaultChannel().asTextChannel().sendMessageEmbeds(new JackiroEmbed()
-                    .setColor(Color.RED)
-                    .setTitle("Voice Channel Error")
-                    .setDescription("Couldn't find a voice channel to join. Please ensure there's at least one voice channel.")
-                    .build()).queue();
+            audioManager.openAudioConnection(voiceChannel);
         }
     }
 

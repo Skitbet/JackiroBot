@@ -8,6 +8,7 @@ import gay.skitbet.jackiro.utils.JackiroEmbed;
 import gay.skitbet.jackiro.utils.SetupSession;
 import net.dv8tion.jda.api.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.api.events.guild.GuildLeaveEvent;
+import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.events.session.ReadyEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -25,6 +26,21 @@ public class MainListener extends ListenerAdapter {
         if (session != null) {
             session.handleMessage(event.getMessage());
             return;
+        }
+
+    }
+
+    @Override
+    public void onStringSelectInteraction(@NotNull StringSelectInteractionEvent event) {
+        // Handle setup
+        event.deferEdit().queue();
+
+        if (event.getComponentId().equalsIgnoreCase("setup_command_select")) {
+            SetupSession session = SetupManager.getSetup(event.getGuild().getId());
+            if (session != null) {
+                session.handleDisableCommands(event.getSelectedOptions());
+                return;
+            }
         }
 
     }

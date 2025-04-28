@@ -6,6 +6,7 @@ import lombok.experimental.Accessors;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 @Data
 @Accessors(fluent = true)
@@ -13,9 +14,9 @@ import java.util.HashMap;
 public class ServerConfig {
     public String guildId;
     public String botUpdateChannelId;
-    public ArrayList<String> disabledCommands = new ArrayList<>();
     public ArrayList<String> disabledModules = new ArrayList<>();
 
+    public List<String> disabledCommands = new ArrayList<>();
     public HashMap<String, ServerUserData> userData = new HashMap<>();
 
     public ServerConfig(String guildId) {
