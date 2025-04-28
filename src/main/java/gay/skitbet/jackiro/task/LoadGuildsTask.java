@@ -26,6 +26,7 @@ public class LoadGuildsTask extends Thread {
                 if (guild.getDefaultChannel() instanceof TextChannel textChannel) {
                     textChannel.sendMessageEmbeds(JackiroEmbed.getNewGuildEmbed(guild)).queue();
                 }
+                guild.deafen(guild.getSelfMember(), true).queue();
             } else {
                 System.out.println("Loaded existed config for guild: " + guild.getName());
             }

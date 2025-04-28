@@ -9,6 +9,7 @@ import gay.skitbet.jackiro.task.LoadGuildsTask;
 import gay.skitbet.jackiro.task.UpdateStatusTask;
 import gay.skitbet.jackiro.utils.JackiroConfig;
 import lombok.Getter;
+import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder;
@@ -103,8 +104,9 @@ public class Jackiro {
         LOGGER.info("Initializing Shard Manager...");
         DefaultShardManagerBuilder builder = DefaultShardManagerBuilder.createDefault(config.getClientToken())
                 .setShardsTotal(config.getShardCount())
-                .enableIntents(GatewayIntent.GUILD_VOICE_STATES, GatewayIntent.GUILD_MESSAGES)
-                .setActivity(Activity.listening("beep boop beep")) // funny starting status
+                .enableIntents(GatewayIntent.GUILD_VOICE_STATES, GatewayIntent.GUILD_MESSAGES, GatewayIntent.MESSAGE_CONTENT)
+                .setActivity(Activity.listening("beep boop .. loading")) // funny starting status
+                .setStatus(OnlineStatus.DO_NOT_DISTURB)
                 .addEventListeners(new MainListener()); //  register main listener
 
         shardManager = builder.build();

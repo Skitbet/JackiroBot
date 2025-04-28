@@ -1,6 +1,7 @@
 package gay.skitbet.jackiro.utils;
 
 import gay.skitbet.jackiro.Jackiro;
+import gay.skitbet.jackiro.command.CommandContext;
 import gay.skitbet.jackiro.database.ServerConfigRepository;
 import gay.skitbet.jackiro.managers.SetupManager;
 import gay.skitbet.jackiro.model.ServerConfig;
@@ -25,14 +26,15 @@ public class SetupSession {
             "What would you like the bot nickname to be? (Type \"none\" for no nickname)"
     );
 
-    public SetupSession(Member member, TextChannel channel) {
-        this.member = member;
-        this.channel = channel;
+    public SetupSession(CommandContext context) {
+        this.member = context.getMember();
+        this.channel = context.getChannel().asTextChannel();
         this.config = Jackiro.getInstance().getServerConfigRepository().load(channel.getGuild().getId());
 
 
-         channel.sendMessage("🤔 Loading the setup...").queue(message -> {
-             questionMessage = message;
+         context.getEvent().reply("🤔 Loading the setup...").queue(hook -> {
+             questionMessage = hook.getCallbackResponse().getMessage();
+             start();
          });
     }
 
@@ -41,6 +43,7 @@ public class SetupSession {
     }
 
     public void handleMessage(Message message) {
+        System.out.println(message);
         String messageRaw = message.getContentRaw();
         message.delete().queue();
 

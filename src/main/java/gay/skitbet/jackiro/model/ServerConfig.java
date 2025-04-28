@@ -13,6 +13,7 @@ import java.util.HashMap;
 public class ServerConfig {
     public String guildId;
     public ArrayList<String> disabledCommands = new ArrayList<>();
+    public ArrayList<String> disabledModules = new ArrayList<>();
 
     public HashMap<String, ServerUserData> userData = new HashMap<>();
 

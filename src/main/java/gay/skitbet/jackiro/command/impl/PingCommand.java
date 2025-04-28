@@ -8,7 +8,7 @@ import java.util.List;
 
 public class PingCommand extends Command {
     public PingCommand() {
-        super("ping", "PONG PONG PONG");
+        super("ping", "PONG PONG PONG", null);
     }
 
     @Override

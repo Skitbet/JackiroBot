@@ -3,6 +3,7 @@ package gay.skitbet.jackiro.listener;
 import gay.skitbet.jackiro.Jackiro;
 import gay.skitbet.jackiro.managers.SetupManager;
 import gay.skitbet.jackiro.model.ServerConfig;
+import gay.skitbet.jackiro.utils.JackiroEmbed;
 import gay.skitbet.jackiro.utils.SetupSession;
 import net.dv8tion.jda.api.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.api.events.guild.GuildLeaveEvent;
@@ -44,6 +45,10 @@ public class MainListener extends ListenerAdapter {
         ServerConfig serverConfig = new ServerConfig(event.getGuild().getId());
 
         Jackiro.getInstance().getServerConfigRepository().save(serverConfig);
+        event.getGuild().getDefaultChannel().asTextChannel().sendMessageEmbeds(JackiroEmbed.getNewGuildEmbed(event.getGuild())).queue();
+        Jackiro.getInstance().getCommandHandler().registerGuildCommands(event.getGuild());
+
+        event.getGuild().deafen(event.getJDA().getSelfUser(), true).queue();
     }
 
     @Override

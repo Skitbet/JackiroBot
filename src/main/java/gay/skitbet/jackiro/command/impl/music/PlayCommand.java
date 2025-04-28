@@ -1,8 +1,9 @@
-package gay.skitbet.jackiro.command.impl;
+package gay.skitbet.jackiro.command.impl.music;
 
 import gay.skitbet.jackiro.Jackiro;
 import gay.skitbet.jackiro.command.Command;
 import gay.skitbet.jackiro.command.CommandContext;
+import gay.skitbet.jackiro.utils.JackiroModule;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 
@@ -10,7 +11,7 @@ import java.util.List;
 
 public class PlayCommand extends Command {
     public PlayCommand() {
-        super("play", "Play media by a url!");
+        super("play", "Play media by a url!", JackiroModule.MUSIC);
     }
 
     @Override

@@ -1,8 +1,11 @@
 package gay.skitbet.jackiro.managers;
 
+import gay.skitbet.jackiro.Jackiro;
 import gay.skitbet.jackiro.command.Command;
 import gay.skitbet.jackiro.command.CommandContext;
+import gay.skitbet.jackiro.model.ServerConfig;
 import gay.skitbet.jackiro.utils.JackiroEmbed;
+import gay.skitbet.jackiro.utils.JackiroModule;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -54,14 +57,25 @@ public class CommandHandler extends ListenerAdapter {
 
 
     public void registerCommands() {
-        System.out.println(commands);
         for (Guild guild : shardManager.getGuilds()) {
-            System.out.println("Loading commnads for " + guild);
-            CommandListUpdateAction commandListUpdateAction = guild.updateCommands();
-            commandListUpdateAction.addCommands(
-                    commands.values().stream().map(Command::toData).collect(Collectors.toSet())
-            ).queue();
+            registerGuildCommands(guild);
         }
+    }
+
+    public void registerGuildCommands(Guild guild) {
+        ServerConfig config = Jackiro.getInstance().getServerConfigRepository().load(guild.getId());
+
+        CommandListUpdateAction commandListUpdateAction = guild.updateCommands();
+        commandListUpdateAction.addCommands(
+                commands.values().stream()
+                        .filter(command -> {
+                            JackiroModule module = command.getModule();
+                            return module == null || !config
+                                    .disabledModules.contains(module.name());
+                        })
+                        .map(Command::toData)
+                        .collect(Collectors.toSet())
+        ).queue();
     }
 
     public Command getCommand(String name) {
@@ -77,7 +91,7 @@ public class CommandHandler extends ListenerAdapter {
             CommandContext context = new CommandContext(event);
 
             // make sure the user has permission!
-            if (command.getPermission() != null && event.getMember().hasPermission(command.getPermission())) {
+            if (command.getPermission() != null && !event.getMember().hasPermission(command.getPermission())) {
                 context.reply(new JackiroEmbed().error("Invalid permission!"));
                 return;
             }

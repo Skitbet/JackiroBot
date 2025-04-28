@@ -12,7 +12,7 @@ import java.util.List;
 
 public class SetupCommand extends Command {
     public SetupCommand() {
-        super("setup", "Run the quick setup on Jackiro for this Guild!", Permission.ADMINISTRATOR);
+        super("setup", "Run the quick setup on Jackiro for this Guild!", Permission.ADMINISTRATOR, null);
     }
 
     @Override
@@ -23,8 +23,7 @@ public class SetupCommand extends Command {
             return;
         }
 
-        session = SetupManager.startSetup(context.getMember(), context.getChannel().asTextChannel());
-        session.start();
+        SetupManager.startSetup(context);
 
     }
 
