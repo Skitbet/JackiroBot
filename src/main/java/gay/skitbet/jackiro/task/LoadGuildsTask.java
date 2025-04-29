@@ -18,7 +18,7 @@ public class LoadGuildsTask extends Thread {
     @Override
     public void run() {
         for (var guild : jackiro.getShardManager().getGuilds()) {
-            ServerConfig config = MongoManager.getServerConfigRepository().load(guild.getId());
+            ServerConfig config = MongoManager.getServerConfigRepository().findById(guild.getId());
             if (config == null) {
                 config = new ServerConfig(guild.getId());
                 MongoManager.getServerConfigRepository().save(config);
@@ -27,7 +27,6 @@ public class LoadGuildsTask extends Thread {
                 if (guild.getDefaultChannel() instanceof TextChannel textChannel) {
                     textChannel.sendMessageEmbeds(JackiroEmbed.getNewGuildEmbed(guild)).queue();
                 }
-                guild.deafen(guild.getSelfMember(), true).queue();
             } else {
                 System.out.println("Loaded existed config for guild: " + guild.getName());
             }

@@ -4,22 +4,17 @@ import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoDatabase;
 import gay.skitbet.jackiro.database.ServerConfigRepository;
+import gay.skitbet.mongoy.Mongoy;
 import lombok.Getter;
 
 public class MongoManager {
-
-    private static MongoClient mongoClient;
-
-    @Getter
-    private static MongoDatabase database;
 
     @Getter
     public static ServerConfigRepository serverConfigRepository;
 
 
     public static void connect(String dbName) {
-        mongoClient = MongoClients.create();
-        database = mongoClient.getDatabase(dbName);
+        Mongoy.init(dbName);
         initRepositories();
     }
 

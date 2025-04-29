@@ -1,6 +1,7 @@
 package gay.skitbet.jackiro.listener;
 
 import gay.skitbet.jackiro.Jackiro;
+import gay.skitbet.jackiro.managers.LevelingManager;
 import gay.skitbet.jackiro.managers.MongoManager;
 import gay.skitbet.jackiro.managers.SetupManager;
 import gay.skitbet.jackiro.model.ServerConfig;
@@ -28,6 +29,9 @@ public class MainListener extends ListenerAdapter {
             return;
         }
 
+        // handle xp gain
+        ServerConfig config = MongoManager.getServerConfigRepository().findById(event.getGuild().getId());
+        LevelingManager.handleGainXP(config, event.getAuthor().getId());
     }
 
     @Override
@@ -71,7 +75,7 @@ public class MainListener extends ListenerAdapter {
     @Override
     public void onGuildLeave(@NotNull GuildLeaveEvent event) {
         MongoManager.getServerConfigRepository()
-                .delete(event.getGuild().getId());
+                .deleteById(event.getGuild().getId());
     }
 
 

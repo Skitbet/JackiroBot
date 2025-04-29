@@ -10,8 +10,6 @@ import lombok.experimental.Accessors;
 public class ServerUserData {
 
     private int xp;
-
-    public int getXp() {
-        return xp;
-    }
+    private int level;
+    private long lastXpGainTimestamp;
 }

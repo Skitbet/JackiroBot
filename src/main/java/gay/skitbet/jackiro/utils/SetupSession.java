@@ -17,6 +17,8 @@ import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.List;
 
+// TODO: Turn the setup into a multi-class setup state system.
+
 @Getter
 public class SetupSession {
 
@@ -25,7 +27,9 @@ public class SetupSession {
     public enum SetupStep {
         NICKNAME("🤔 What nickname should the bot use? (Type `none` for no nickname)"),
         UPDATE_CHANNEL("📢 Please mention the channel where bot updates should be sent. (Type `none` to skip)"),
-        DISABLED_COMMANDS("🚫 Choose which commands you'd like to disable.");
+        DISABLED_COMMANDS("🚫 Choose which commands you'd like to disable."),
+        XP_ENABLED("🎯 Would you like to enable the XP system? (yes/no)"),
+        XP_MULTIPLIER("📈 Set the XP multiplier (e.g. `1.0` for normal gain, `2.0` for double XP). ");
 
         private final String message;
 
@@ -58,7 +62,7 @@ public class SetupSession {
     public SetupSession(CommandContext context) {
         this.member = context.getMember();
         this.channel = context.getChannel().asTextChannel();
-        this.config = MongoManager.getServerConfigRepository().load(channel.getGuild().getId());
+        this.config = MongoManager.getServerConfigRepository().findById(context.getGuild().getId());
 
         startSession();
     }
@@ -78,6 +82,8 @@ public class SetupSession {
         switch (currentStep) {
             case NICKNAME -> handleNicknameStep(content);
             case UPDATE_CHANNEL -> handleUpdateChannelStep(message);
+            case XP_ENABLED -> handleXpEnabledStep(content);
+            case XP_MULTIPLIER -> handleXpMultiplierStep(content);
             default -> { /* Should never happen */ }
         }
 
@@ -100,6 +106,21 @@ public class SetupSession {
         if (!content.equalsIgnoreCase("none") && !message.getMentions().getChannels().isEmpty()) {
             String channelId = message.getMentions().getChannels().get(0).getId();
             config.botUpdateChannelId = channelId;
+        }
+    }
+
+    private void handleXpEnabledStep(String content) {
+        boolean enabled = content.equalsIgnoreCase("yes") || content.equalsIgnoreCase("true");
+        config.xpEnabled = enabled;
+    }
+
+    private void handleXpMultiplierStep(String content) {
+        try {
+            double multiplier = Double.parseDouble(content);
+            config.xpMultiplier = multiplier;
+        } catch (NumberFormatException e) {
+            config.xpMultiplier = 1.0;
+            channel.sendMessage("❌ Invalid number. Defaulting to 1.0").queue();
         }
     }
 

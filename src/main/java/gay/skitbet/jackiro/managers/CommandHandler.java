@@ -65,7 +65,8 @@ public class CommandHandler extends ListenerAdapter {
     }
 
     public void registerGuildCommands(Guild guild) {
-        ServerConfig config = MongoManager.getServerConfigRepository().load(guild.getId());
+        ServerConfig config = MongoManager.getServerConfigRepository().findOrCreate(guild.getId());
+
 
         CommandListUpdateAction commandListUpdateAction = guild.updateCommands();
         commandListUpdateAction.addCommands(
@@ -92,7 +93,7 @@ public class CommandHandler extends ListenerAdapter {
 
         if (command != null) {
             // handle if command is disabled
-            ServerConfig config = MongoManager.getServerConfigRepository().load(event.getGuild().getId());
+            ServerConfig config = MongoManager.getServerConfigRepository().findById(event.getGuild().getId());
             if (config.disabledCommands.contains(command.getName())) {
                 event.replyEmbeds(new JackiroEmbed().error("This command is disabled in this server!")).setEphemeral(true).queue();
                 return;
