@@ -45,7 +45,7 @@ class Jackiro private constructor(config: JackiroConfig) {
     val startTime: Instant = Instant.now()
     var readyShards: Int = 0
 
-    var jackiroMusicManager: JackiroMusicManager? = null
+    lateinit var jackiroMusicManager: JackiroMusicManager
         private set
     lateinit var commandHandler: CommandHandler
         private set

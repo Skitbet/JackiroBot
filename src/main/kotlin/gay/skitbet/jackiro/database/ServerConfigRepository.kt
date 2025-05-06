@@ -1,38 +1,18 @@
-package gay.skitbet.jackiro.database;
+package gay.skitbet.jackiro.database
 
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.model.Filters;
-import com.mongodb.client.model.ReplaceOptions;
-import gay.skitbet.jackiro.managers.MongoManager;
-import gay.skitbet.jackiro.model.ServerConfig;
-import gay.skitbet.jackiro.model.ServerUserData;
-import gay.skitbet.mongoy.repository.MongoRepository;
-import lombok.Getter;
-import org.bson.Document;
+import gay.skitbet.jackiro.model.ServerConfig
+import gay.skitbet.mongoy.repository.MongoRepository
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.Optional;
-
-public class ServerConfigRepository extends MongoRepository<ServerConfig> {
-
-    public ServerConfig findOrCreate(String guildId) {
-        ServerConfig config = findById(guildId);
+class ServerConfigRepository : MongoRepository<ServerConfig?>(ServerConfig::class.java) {
+    fun findOrCreate(guildId: String?): ServerConfig {
+        var config: ServerConfig? = findById(guildId)
         if (config == null) {
-            config = new ServerConfig(guildId);
-            save(config);
+            config = ServerConfig(guildId!!)
+            save(config)
         }
-        return config;
+        return config
     }
-
-
-    public ServerConfigRepository() {
-        super(ServerConfig.class);
-    }
-
-
+}
 //    private final MongoCollection<Document> collection;
 //
 //    @Getter
@@ -139,4 +119,4 @@ public class ServerConfigRepository extends MongoRepository<ServerConfig> {
 //        }
 //        return userDataDoc;
 //    }
-}
+
