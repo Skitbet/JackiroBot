@@ -4,7 +4,7 @@ import gay.skitbet.jackiro.command.Command;
 import gay.skitbet.jackiro.command.CommandContext;
 import gay.skitbet.jackiro.managers.SetupManager;
 import gay.skitbet.jackiro.utils.JackiroEmbed;
-import gay.skitbet.jackiro.utils.SetupSession;
+import gay.skitbet.jackiro.utils.setup.SetupSession;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 
