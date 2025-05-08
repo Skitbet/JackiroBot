@@ -23,7 +23,7 @@ object JackiroLauncher {
     private fun loadOrCreateConfig(): JackiroConfig {
         return if (configFile.exists()) {
             try {
-                val json = FileUtils.readFileToString(configFile, StandardCharsets.UTF_8 as String?)
+                val json = FileUtils.readFileToString(configFile, "UTF-8")
                 gson.fromJson(json, JackiroConfig::class.java)
             } catch (e: Exception) {
                 System.err.println("Failed to read config file: ${e.message}")
@@ -55,7 +55,7 @@ object JackiroLauncher {
         )
 
         try {
-            FileUtils.writeStringToFile(configFile, gson.toJson(defaultConfig), StandardCharsets.UTF_8 as String?)
+            FileUtils.writeStringToFile(configFile, gson.toJson(defaultConfig), "UTF-8")
         } catch (e: Exception) {
             System.err.println("Failed to create default config: ${e.message}")
             e.printStackTrace()

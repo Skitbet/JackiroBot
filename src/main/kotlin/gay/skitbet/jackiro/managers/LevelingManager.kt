@@ -11,26 +11,26 @@ Mostly static class as it's got no data I need linked to it
 object LevelingManager {
 
     fun handleGainXP(config: ServerConfig, userId: String): Boolean {
-        val userData = config.userData()[userId] ?: ServerUserData()
+        val userData = config.userData[userId] ?: ServerUserData()
 
         val now = Instant.now().epochSecond
-        val cooldown = config.cooldownSeconds()
+        val cooldown = config.cooldownSeconds
 
-        if (now - userData.lastXpGainTimestamp() < cooldown) {
+        if (now - userData.lastXpGainTimestamp < cooldown) {
             return false // too soon to gain XP
         }
 
         // update
-        userData.xp(userData.xp() + config.xpPerMessage())
-        userData.lastXpGainTimestamp(now)
+        userData.xp = userData.xp + config.xpPerMessage
+        userData.lastXpGainTimestamp = now
 
         // check for level up
-        val newLevel = calculateLevel(userData.xp(), config.baseXpToLevelUp())
-        if (newLevel > userData.level()) {
-            userData.level(newLevel)
+        val newLevel = calculateLevel(userData.xp, config.baseXpToLevelUp)
+        if (newLevel > userData.level) {
+            userData.level = newLevel
         }
 
-        config.userData()[userId] = userData
+        config.userData[userId] = userData
         MongoManager.serverConfigRepository.save(config)
         return true
     }

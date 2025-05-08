@@ -26,14 +26,13 @@ class DisabledCommandsStage : SetupStage("🚫 Choose which commands you'd like 
         return menuBuilder.build()
     }
 
-    override fun handleActionRow(event: StringSelectInteractionEvent): Boolean {
-        setupSession.config.disabledCommands.clear()
-        for (selectedOption in event.selectedOptions) {
-            setupSession.config.disabledCommands.add(selectedOption.value)
+    override fun handleActionRow(options: List<SelectOption>): Boolean {
+        for (selectedOption in options) {
+            setupSession.config?.disabledCommands?.add(selectedOption.value)
         }
 
         MongoManager.serverConfigRepository.save(setupSession.config)
-        Jackiro.instance.commandHandler.registerGuildCommands(setupSession.member.guild)
+        setupSession.member?.guild?.let { Jackiro.instance.commandHandler.registerGuildCommands(it) }
         return true
     }
 

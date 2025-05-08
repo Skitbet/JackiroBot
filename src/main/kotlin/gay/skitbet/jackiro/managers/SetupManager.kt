@@ -9,7 +9,7 @@ object SetupManager {
 
     fun startSetup(context: CommandContext): SetupSession {
         val setupSession = SetupSession(context)
-        activeSetups[context.guild.id] = setupSession
+        context.guild?.let { activeSetups[it.id] = setupSession }
         return setupSession
     }
 

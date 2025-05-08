@@ -15,7 +15,7 @@ abstract class Command {
     val module: JackiroModule?
     val ephemeral: Boolean
 
-    private var permission: Permission? = null
+    var permission: Permission? = null
 
     constructor(name: String, description: String, module: JackiroModule?, ephemeral: Boolean) {
         this.name = name.lowercase(Locale.getDefault())

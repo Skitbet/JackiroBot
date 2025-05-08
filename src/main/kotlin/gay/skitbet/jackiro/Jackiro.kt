@@ -29,14 +29,13 @@ class Jackiro private constructor(config: JackiroConfig) {
         lateinit var config: JackiroConfig
             private set
 
-        fun getInstance(): Jackiro =
-            instance ?: throw IllegalStateException("Jackiro has not been initialized yet.")
-
         fun initialize(config: JackiroConfig) {
-            if (instance != null) {
+            if (::instance.isInitialized) {
                 throw IllegalStateException("Jackiro has already been initialized.")
             }
-            Jackiro(config).start()
+            val jackiro = Jackiro(config)
+            instance = jackiro
+            jackiro.start()
         }
     }
 
@@ -54,7 +53,6 @@ class Jackiro private constructor(config: JackiroConfig) {
 
     init {
         Companion.config = config
-        instance = this
     }
 
     private fun start() {

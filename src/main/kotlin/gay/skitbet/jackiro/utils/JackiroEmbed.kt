@@ -70,7 +70,7 @@ class JackiroEmbed {
     }
 
     companion object {
-        private val ICON_URL: String? = Jackiro.getInstance()
+        private val ICON_URL: String? = Jackiro.instance
             .shardManager
             .shards
             .firstOrNull()

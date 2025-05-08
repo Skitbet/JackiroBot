@@ -77,6 +77,7 @@ class CommandHandler(private val shardManager: ShardManager) : ListenerAdapter()
         if (command != null) {
             // handle if command is disabled
             val config = MongoManager.serverConfigRepository.findById(event.guild?.id)
+            if (config == null) return
             if (config.disabledCommands.contains(command.name)) {
                 event.replyEmbeds(JackiroEmbed().error("This command is disabled in this server!")).setEphemeral(true).queue()
                 return

@@ -13,10 +13,6 @@ import java.util.concurrent.LinkedBlockingQueue
 class TrackScheduler(private val player: AudioPlayer) : AudioEventAdapter() {
     val queue: BlockingQueue<AudioTrack> = LinkedBlockingQueue()
 
-    fun getQueue(): BlockingQueue<AudioTrack> {
-        return queue
-    }
-
     /**
      * Add the next track to queue or play right away if nothing is in the queue.
      *

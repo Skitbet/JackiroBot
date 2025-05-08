@@ -22,11 +22,11 @@ class CommandContext(private val event: SlashCommandInteractionEvent, command: C
     }
 
     fun reply(message: String) {
-        event.getHook().editOriginal(message).queue()
+        event.hook.editOriginal(message).queue()
     }
 
     fun reply(embed: MessageEmbed) {
-        event.getHook().editOriginalEmbeds(embed).queue()
+        event.hook.editOriginalEmbeds(embed).queue()
     }
 
     fun getOption(key: String): OptionMapping? {

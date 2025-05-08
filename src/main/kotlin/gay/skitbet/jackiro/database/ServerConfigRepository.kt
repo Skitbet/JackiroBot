@@ -1,6 +1,7 @@
 package gay.skitbet.jackiro.database
 
 import gay.skitbet.jackiro.model.ServerConfig
+import gay.skitbet.mongoy.annotation.CollectionName
 import gay.skitbet.mongoy.repository.MongoRepository
 
 class ServerConfigRepository : MongoRepository<ServerConfig?>(ServerConfig::class.java) {

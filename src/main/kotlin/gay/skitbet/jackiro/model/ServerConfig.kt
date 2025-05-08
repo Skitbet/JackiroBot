@@ -10,7 +10,7 @@ data class ServerConfig(
 
     var botUpdateChannelId: String? = null,
     var disabledModules: ArrayList<String> = ArrayList(),
-    var disabledCommands: List<String> = ArrayList(),
+    var disabledCommands: MutableList<String> = mutableListOf<String>(),
     var userData: HashMap<String, ServerUserData> = HashMap(),
 
     // XP Settings

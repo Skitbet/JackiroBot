@@ -7,7 +7,6 @@ import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack
-import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo
 import gay.skitbet.jackiro.Jackiro
 import gay.skitbet.jackiro.command.CommandContext
 import gay.skitbet.jackiro.utils.JackiroEmbed
@@ -26,19 +25,19 @@ class JackiroMusicManager : ListenerAdapter() {
     init {
         AudioSourceManagers.registerRemoteSources(playerManager)
         AudioSourceManagers.registerLocalSource(playerManager)
-        Jackiro.getInstance().shardManager.addEventListener(this)
+        Jackiro.instance.shardManager.addEventListener(this)
     }
 
     @Synchronized
-    fun getGuildAndPlayer(guild: Guild, musicChannel: TextChannel): GuildMusicManager {
-        var musicManager = musicManagers[guild.id]
+    fun getGuildAndPlayer(guild: Guild?, musicChannel: TextChannel): GuildMusicManager {
+        var musicManager = guild?.let { musicManagers[it.id] }
 
         if (musicManager == null) {
             musicManager = GuildMusicManager(playerManager, musicChannel)
-            musicManagers[guild.id] = musicManager
+            guild?.let { musicManagers[it.id] = musicManager }
         }
 
-        guild.audioManager.setSendingHandler(musicManager.getSendHandler())
+        guild?.audioManager?.sendingHandler = musicManager.getSendHandler()
         return musicManager
     }
 
@@ -106,14 +105,14 @@ class JackiroMusicManager : ListenerAdapter() {
         })
     }
 
-    private fun play(context: CommandContext, guild: Guild, musicManager: GuildMusicManager, track: AudioTrack) {
+    private fun play(context: CommandContext, guild: Guild?, musicManager: GuildMusicManager, track: AudioTrack) {
         if (musicManager.player.playingTrack != null) {
             val position = musicManager.scheduler.getTrackPositionInQueue(track)
             val nextTrack = musicManager.scheduler.peekNextTrack()?.info?.title ?: "No track in queue."
 
             var musicChannel: TextChannel? = musicManager.musicChannel
             if (musicChannel == null) {
-                musicChannel = guild.defaultChannel?.asTextChannel()
+                musicChannel = guild?.defaultChannel?.asTextChannel()
             }
             val currentTrack = musicManager.player.playingTrack.info
             musicChannel?.sendMessageEmbeds(JackiroEmbed()
@@ -125,8 +124,8 @@ class JackiroMusicManager : ListenerAdapter() {
                 .build())?.queue()
         }
 
-        context.member.voiceState?.channel?.asVoiceChannel()?.let {
-            connectToVoiceChannel(it, guild.audioManager)
+        context.member?.voiceState?.channel?.asVoiceChannel()?.let {
+            guild?.let { it1 -> connectToVoiceChannel(it, it1.audioManager) }
             musicManager.scheduler.queue(track)
         }
 

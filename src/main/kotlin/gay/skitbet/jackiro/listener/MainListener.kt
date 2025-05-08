@@ -26,23 +26,23 @@ class MainListener : ListenerAdapter() {
         }
 
         val config = MongoManager.serverConfigRepository.findById(guildId)
-        LevelingManager.handleGainXP(config, event.author.id)
+        config?.let { LevelingManager.handleGainXP(it, event.author.id) }
     }
 
     override fun onGenericMessageReaction(event: GenericMessageReactionEvent) {
         if (event.user?.isBot == true) return
 
-        val guildId = event.guild?.id ?: return
+        val guildId = event.guild.id
         SetupManager.getSetup(guildId)?.handleReaction(event.reaction)
     }
 
     override fun onStringSelectInteraction(event: StringSelectInteractionEvent) {
         event.deferEdit().queue()
 
-        if (event.componentId.equals("setup_command_select", ignoreCase = true)) {
+        if (event.componentId.equals("jackiro_setup", ignoreCase = true)) {
             event.guild?.id?.let { guildId ->
                 val session = SetupManager.getSetup(guildId)
-                session?.handleDisableCommands(event.interaction.selectedOptions)
+                session?.handleDropDown(event.interaction.selectedOptions)
             }
         }
     }

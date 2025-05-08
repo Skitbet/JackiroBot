@@ -37,7 +37,7 @@ class PlayCommand : Command("play", "Play media by a url!", JackiroModule.MUSIC,
             )
             return
         }
-        Jackiro.getInstance().jackiroMusicManager.loadAndPlay(context, url)
+        Jackiro.instance.jackiroMusicManager.loadAndPlay(context, url)
     }
 
     override fun addOptions(options: MutableList<OptionData?>): MutableList<OptionData?> {
